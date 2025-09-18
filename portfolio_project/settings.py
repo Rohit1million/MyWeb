@@ -55,7 +55,7 @@ ROOT_URLCONF = 'portfolio_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'portfolio/templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -157,3 +157,14 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'error',
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rohit.shrestha314@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'xxvo ytek jbpa anzl'  # Gmail App Password (not regular password)
+
+# Default from email
+DEFAULT_FROM_EMAIL = 'rohit.shrestha314@gmail.com'
+CONTACT_EMAIL = 'rohit.shrestha314@gmail.com'  # Where contact form emails should be sent

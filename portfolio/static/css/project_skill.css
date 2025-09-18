@@ -374,7 +374,7 @@
 .project-btn {
   padding: clamp(10px, 2vw, 14px) clamp(16px, 3vw, 24px);
   background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.05));
-  border: 1px solid var(--glass-border);
+  border: 1px solid ;
   border-radius: var(--border-radius-sm);
   color: var(--text);
   text-decoration: none;
@@ -391,6 +391,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+
 }
 
 .project-btn i {
@@ -402,7 +403,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent), rgba(184, 203, 224, 0.9));
+  background: linear-gradient(135deg, var(--accent), rgba(213, 214, 214, 0.9));
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -417,7 +418,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
+    rgb(177, 231, 186) 50%,
     transparent 100%
   );
   transition: left 0.6s ease;
@@ -428,20 +429,9 @@
   z-index: 1;
 }
 
-.project-btn:hover {
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-  border-color: var(--accent);
-  text-decoration: none;
-}
 
 .project-btn:hover i {
-  transform: translateX(3px);
-}
-
-.project-btn:hover::before {
-  opacity: 1;
+  transform: translateX(6px);
 }
 
 .project-btn:hover::after {
@@ -454,8 +444,8 @@
   align-items: center;
   justify-content: center;
   gap: 24px;
-  margin-top: 32px;
-  padding: 20px;
+  margin-top: -30px;
+
 }
 
 .carousel-btn {
@@ -481,7 +471,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent), rgba(184, 203, 224, 0.9));
+  background: linear-gradient(135deg, var(--accent), rgba(0, 0, 0, 0.9));
   opacity: 0;
   transition: opacity 0.3s ease;
   border-radius: inherit;
@@ -490,8 +480,9 @@
 .carousel-btn:hover:not(:disabled) {
   transform: scale(1.1);
   border-color: var(--accent);
-  color: white;
+  color: rgb(0, 0, 0);
   box-shadow: var(--shadow-light);
+  text-decoration-color: black;
 }
 
 .carousel-btn:hover:not(:disabled)::before {
@@ -789,11 +780,3 @@
   outline-offset: 2px;
 }
 
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  :root {
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-hover: rgba(255, 255, 255, 0.4);
-  }
-}

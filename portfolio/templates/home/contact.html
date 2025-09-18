@@ -1,11 +1,58 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
 
+<!-- Messages Display -->
+{% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            {{ message }}
+            <button class="message-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 <!-- Contact Section -->
 <div class="contact-container">
     <!-- Map Section -->
     <div class="map-section" id="map">
-        <!-- Map will be loaded here -->
+        <!-- Google Maps Embed using Database Coordinates (No API Key Required) -->
+        {% if personal_info and personal_info.latitude and personal_info.longitude %}
+            <iframe 
+                src="https://www.google.com/maps?q={{ personal_info.latitude }},{{ personal_info.longitude }}&hl=en&z=15&output=embed"
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Location Map">
+            </iframe>
+        {% elif personal_info and personal_info.address %}
+            <iframe 
+                src="https://www.google.com/maps?q={{ personal_info.address|urlencode }}{% if personal_info.city %},+{{ personal_info.city|urlencode }}{% endif %}{% if personal_info.state %},+{{ personal_info.state|urlencode }}{% endif %}&hl=en&z=15&output=embed"
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Location Map">
+            </iframe>
+        {% else %}
+            <!-- Fallback: Default Adelaide Location -->
+            <iframe 
+                src="https://www.google.com/maps?q=-34.9285,138.6007&hl=en&z=13&output=embed"
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Location Map">
+            </iframe>
+        {% endif %}
     </div>
     
     <!-- Content Section -->
@@ -52,205 +99,194 @@
             <p class="contact-message">Contact details will appear here when available.</p>
         {% endif %}
     </div>
+    
+    <!-- Contact Form Section -->
+    <div class="form-section">
+        <h3 class="form-title">Get In Touch</h3>
+        <p class="form-description">Send me a message and I'll get back to you as soon as possible.</p>
+        
+        <form class="contact-form" method="post" action="{% url 'contact_submit' %}">
+            {% csrf_token %}
+            
+            <!-- Full Name -->
+            <div class="form-group">
+                <label for="full_name" class="form-label">Full Name *</label>
+                <input type="text" id="full_name" name="full_name" class="form-input" required>
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email *</label>
+                <input type="email" id="email" name="email" class="form-input" required>
+            </div>
+            
+            <!-- Message -->
+            <div class="form-group">
+                <label for="message" class="form-label">Message *</label>
+                <textarea id="message" name="message" class="form-input form-textarea" rows="4" placeholder="Tell me about your project or inquiry..." required></textarea>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit" class="form-submit-btn">
+                    <span class="btn-text">Send Message</span>
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<!-- Include Leaflet CSS and JS for the map -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-// Initialize map when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    initializeMap();
-});
-
-function initializeMap() {
-    // Default coordinates (you can set these based on personal_info data)
-    {% if personal_info and personal_info.latitude and personal_info.longitude %}
-        const lat = {{ personal_info.latitude }};
-        const lng = {{ personal_info.longitude }};
-        const locationName = "{{ personal_info.name|default:'Our Location' }}";
-    {% else %}
-        // Default to a central location if no coordinates available
-        const lat = 40.7128;
-        const lng = -74.0060;
-        const locationName = "New York, NY";
-    {% endif %}
-    
-    // Initialize the map
-    const map = L.map('map').setView([lat, lng], 13);
-    
-    // Add tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-    
-    // Add marker
-    const marker = L.marker([lat, lng]).addTo(map);
-    
-    // Add popup to marker
-    {% if personal_info %}
-    marker.bindPopup(`
-        <div class="map-popup">
-            <h3>{{ personal_info.name|default:'Contact Location' }}</h3>
-            {% if personal_info.address %}<p>{{ personal_info.address }}</p>{% endif %}
-            {% if personal_info.city and personal_info.state %}<p>{{ personal_info.city }}, {{ personal_info.state }}{% if personal_info.zip_code %} {{ personal_info.zip_code }}{% endif %}</p>{% endif %}
-        </div>
-    `).openPopup();
-    {% else %}
-    marker.bindPopup('<div class="map-popup"><h3>Contact Location</h3></div>').openPopup();
-    {% endif %}
-}
-</script>
-
 <style>
-.contact-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    max-width: 1200px;
-    margin: 0 auto;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    background: var(--glass-bg, rgba(255, 255, 255, 0.95));
-    backdrop-filter: blur(20px);
+/* Message Styles */
+.messages-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
 }
 
-.map-section {
-    height: 400px;
+.message {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
     position: relative;
-}
-
-#map {
-    height: 100%;
-    width: 100%;
-}
-
-.content-section {
-    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.contact-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text, #333);
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, var(--text, #333), var(--accent, #667eea));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.contact-address, .contact-location {
-    font-size: 16px;
-    color: var(--text-light, #666);
-    margin-bottom: 8px;
-    line-height: 1.5;
-}
-
-.contact-details {
-    margin-top: 24px;
-}
-
-.contact-item {
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding: 8px 0;
+    animation: slideIn 0.3s ease-out;
 }
 
-.contact-label {
-    font-weight: 600;
-    color: var(--text, #333);
-    min-width: 80px;
-    margin-right: 12px;
+.message-success {
+    background: #10b981;
+    color: white;
 }
 
-.contact-link {
-    color: var(--accent, #667eea);
-    text-decoration: none;
-    transition: color 0.3s ease;
+.message-error {
+    background: #ef4444;
+    color: white;
 }
 
-.contact-link:hover {
-    color: var(--text, #333);
-    text-decoration: underline;
+.message-warning {
+    background: #f59e0b;
+    color: white;
 }
 
-.contact-message {
-    color: var(--text-light, #666);
-    font-style: italic;
+.message-info {
+    background: #3b82f6;
+    color: white;
 }
 
-/* Map popup styling */
-.map-popup h3 {
-    margin: 0 0 8px 0;
-    font-size: 16px;
-    color: #333;
+.message-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
 }
 
-.map-popup p {
-    margin: 4px 0;
-    font-size: 14px;
-    color: #666;
+.message-close:hover {
+    opacity: 1;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .contact-container {
-        background: rgba(30, 30, 30, 0.95);
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
     }
-    
-    .contact-title {
-        background: linear-gradient(135deg, #f0f0f0, #818cf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .contact-label {
-        color: #f0f0f0;
-    }
-    
-    .contact-address, .contact-location, .contact-message {
-        color: #ccc;
-    }
-    
-    .contact-link {
-        color: #818cf8;
-    }
-    
-    .contact-link:hover {
-        color: #f0f0f0;
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
 
-/* Responsive design */
+/* Auto-hide messages after 5 seconds */
+.message {
+    animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-out 4.5s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Mobile responsive */
 @media (max-width: 768px) {
-    .contact-container {
-        grid-template-columns: 1fr;
-        margin: 16px;
+    .messages-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
     }
     
-    .map-section {
-        height: 300px;
-    }
-    
-    .content-section {
-        padding: 24px;
-    }
-    
-    .contact-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .contact-label {
-        margin-bottom: 4px;
-        min-width: auto;
+    .message {
+        padding: 10px 16px;
+        font-size: 14px;
     }
 }
 </style>
+
+<script>
+// Initialize form functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeForm();
+    initializeMessages();
+});
+
+function initializeForm() {
+    const form = document.querySelector('.contact-form');
+    const submitBtn = document.querySelector('.form-submit-btn');
+    
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            // Add loading state to button
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // Change button text
+            const btnText = submitBtn.querySelector('.btn-text');
+            if (btnText) {
+                btnText.textContent = 'Sending...';
+            }
+        });
+        
+        // Add input focus effects
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentNode.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentNode.classList.remove('focused');
+                }
+            });
+            
+            // Check if input has value on load
+            if (input.value) {
+                input.parentNode.classList.add('focused');
+            }
+        });
+    }
+}
+
+function initializeMessages() {
+    // Auto-hide messages after 5 seconds
+    const messages = document.querySelectorAll('.message');
+    messages.forEach(message => {
+        setTimeout(() => {
+            message.style.display = 'none';
+        }, 5000);
+    });
+}
+</script>

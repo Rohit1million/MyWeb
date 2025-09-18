@@ -13,18 +13,24 @@
       {% for project in featured_projects %}
         <div class="project-card" data-project-id="{{project.id}}">
           <!-- Project Image Section -->
-          <div class="project-image">
-            {% if project.image %}
-              <img src="{{project.image.url}}" alt="{{project.title}} preview" loading="lazy">
-            {% else %}
-              <div class="project-placeholder-image">
-                <i class="fas fa-image"></i>
-              </div>
-            {% endif %}
-            <div class="project-overlay">
-              <div class="project-color-bar" style="background-color: {% cycle '#6c757d' '#007bff' '#fd7e14' '#28a745' '#dc3545' '#6f42c1' %}"></div>
-            </div>
-          </div>
+         <div class="project-image">
+  {% if project.id == 1 %}
+    <img src="{% static 'images/icons/image.png' %}" alt="{{project.title}} preview" loading="lazy">
+  {% elif project.id == 2 %}
+    <img src="{% static 'images/icons/project2.png' %}" alt="{{project.title}} preview" loading="lazy">
+  {% elif project.id == 3 %}
+    <img src="{% static 'images/icons/project3.png' %}" alt="{{project.title}} preview" loading="lazy">
+  {% else %}
+    <div class="project-placeholder-image">
+      <i class="fas fa-image"></i>
+    </div>
+  {% endif %}
+  
+  <div class="project-overlay">
+    <div class="project-color-bar" style="background-color: {% cycle '#6c757d' '#007bff' '#fd7e14' '#28a745' '#dc3545' '#6f42c1' %}"></div>
+  </div>
+</div>
+        
           
           <!-- Project Content -->
           <div class="project-content">

@@ -10,10 +10,9 @@ from django.contrib.auth.decorators import login_required
 
 # Django utilities
 from django.utils import timezone
-from django.utils.html import strip_tags
 
 # Django decorators
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
@@ -26,11 +25,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 
 # Django email functionality
-from django.core.mail import send_mail, EmailMultiAlternatives
-from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 # Python standard library
-import json
 import logging
 
 from .models import (
@@ -57,10 +54,17 @@ def home(request):
         featured_skills = Skills.objects.filter(featured=1, active=1)
         skill_categories = SkillCategories.objects.filter(show_on_home=1).order_by('display_order')
         
-        # Projects data
-        featured_projects = Projects.objects.filter(featured=1, published=1)[:6]
-        all_projects = Projects.objects.filter(published=1).order_by('-featured', '-start_date')
+        # Projects data with images
+        featured_projects = Projects.objects.filter(featured=1, published=1).prefetch_related('projectimages_set')[:6]
+        all_projects = Projects.objects.filter(published=1).order_by('-featured', '-start_date').prefetch_related('projectimages_set')
         project_categories = ProjectCategories.objects.all().order_by('display_order')
+        
+        # Add primary image for each project
+        for project in featured_projects:
+            project.primary_image = project.projectimages_set.order_by('display_order').first()
+        
+        for project in all_projects:
+            project.primary_image = project.projectimages_set.order_by('display_order').first()
         
         # Education and certifications
         education_list = Education.objects.filter(featured=1).order_by('-start_date')
@@ -86,7 +90,162 @@ def home(request):
         logger.error(f"Error in home view: {str(e)}")
         messages.error(request, "Sorry, there was an error loading the page.")
         return render(request, 'home/home.html', {'personal_info': None})
+        
+    except Exception as e:
+        logger.error(f"Error in home view: {str(e)}")
+        messages.error(request, "Sorry, there was an error loading the page.")
+        return render(request, 'home/home.html', {'personal_info': None})
 
+
+def contact_view(request):
+    """Display the contact page"""
+    try:
+        personal_info = PersonalInfo.objects.first()
+        context = {
+            'personal_info': personal_info,
+        }
+        return render(request, 'contact.html', context)  # Remove 'templates/'
+        
+    except Exception as e:
+        logger.error(f"Error in contact view: {str(e)}")
+        return render(request, 'contact.html', {'personal_info': None})  # Remove 'templates/' here too
+
+@require_http_methods(["POST"])
+def contact_submit(request):
+    """Handle contact form submissions"""
+    try:
+        # Get form data
+        full_name = request.POST.get('full_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        # Validate required fields
+        if not full_name:
+            messages.error(request, "Full name is required.")
+            return redirect('/')
+            
+        if not email:
+            messages.error(request, "Email is required.")
+            return redirect('/')
+            
+        if not message:
+            messages.error(request, "Message is required.")
+            return redirect('/')
+        
+        # Validate email format
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Please enter a valid email address.")
+            return redirect('/')
+        
+        # Save to database
+        contact_record = Contacts.objects.create(
+            name=full_name,
+            email=email,
+            subject=f"Contact from {full_name}",
+            message=message,
+            phone=None,
+            company=None,
+            is_read=0,
+            is_replied=0,
+            created_at=timezone.now()
+        )
+        
+        # Send email notification
+        email_sent = send_contact_email(contact_record)
+        
+        # Log submission
+        logger.info(f"Contact form submission from {email} (ID: {contact_record.id})")
+        
+        # Success message
+        if email_sent:
+            messages.success(request, "Your message has been sent! I'll get back to you soon.")
+        else:
+            messages.success(request, "Your message has been sent! I'll get back to you soon.")
+            
+        return redirect('/')  # Redirect to home page
+        
+    except Exception as e:
+        logger.error(f"Error in contact form submission: {str(e)}")
+        messages.error(request, "Sorry, there was an error sending your message. Please try again.")
+        return redirect('/')  # Redirect to home page
+
+
+def send_contact_email(contact_record):
+    """Send email notification for contact form submission"""
+    try:
+        # Get recipient email
+        personal_info = PersonalInfo.objects.first()
+        recipient_email = None
+        
+        if personal_info and personal_info.email:
+            recipient_email = personal_info.email
+        else:
+            recipient_email = getattr(settings, 'CONTACT_EMAIL', None)
+            
+        if not recipient_email:
+            recipient_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None)
+        
+        if not recipient_email:
+            logger.error("No recipient email configured")
+            return False
+        
+        # Email content
+        subject = f"New Contact Form Message from {contact_record.name}"
+        message = f"""
+New contact form submission:
+
+From: {contact_record.name}
+Email: {contact_record.email}
+Submitted: {contact_record.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+
+Message:
+{contact_record.message}
+
+---
+Reply directly to this email to respond to {contact_record.name}.
+        """.strip()
+        
+        # Send email - Fixed reply_to parameter
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yoursite.com'),
+            recipient_list=[recipient_email],
+            fail_silently=False,
+        )
+        
+        # Send confirmation to user
+        try:
+            confirmation_subject = "Thank you for contacting me"
+            confirmation_message = f"""
+Hi {contact_record.name},
+
+Thank you for reaching out! I've received your message and will get back to you as soon as possible.
+
+Your message:
+"{contact_record.message}"
+
+Best regards,
+{personal_info.name if personal_info else 'Portfolio Team'}
+            """.strip()
+            
+            send_mail(
+                subject=confirmation_subject,
+                message=confirmation_message,
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yoursite.com'),
+                recipient_list=[contact_record.email],
+                fail_silently=True,
+            )
+        except:
+            pass  # Don't fail if confirmation email fails
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error sending contact email: {str(e)}")
+        return False
 
 def project_detail(request, slug):
     """Individual project detail page"""
@@ -219,273 +378,6 @@ def custom_logout_view(request):
         messages.info(request, 'You were not logged in.')
     
     return redirect('/')
-
-
-# Contact Form Handling
-@require_http_methods(["POST"])
-def contact_submit(request):
-    """Handle contact form submissions via AJAX"""
-    try:
-        # Get form data
-        form_data = {
-            'name': request.POST.get('full_name', '').strip(),
-            'email': request.POST.get('email', '').strip(),
-            'subject': request.POST.get('subject', '').strip(),
-            'message': request.POST.get('message', '').strip(),
-            'phone': request.POST.get('phone', '').strip(),
-            'company': request.POST.get('company', '').strip(),
-        }
-        
-        # Validate form data
-        validation_errors = validate_contact_form(form_data)
-        
-        if validation_errors:
-            return JsonResponse({
-                'success': False,
-                'errors': validation_errors
-            })
-        
-        # Create contact record
-        contact_record = Contacts.objects.create(
-            name=form_data['name'],
-            email=form_data['email'],
-            subject=form_data['subject'] or f"Contact from {form_data['name']}",
-            message=form_data['message'],
-            phone=form_data['phone'] or None,
-            company=form_data['company'] or None,
-            is_read=0,
-            is_replied=0,
-            created_at=timezone.now()
-        )
-        
-        # Send email notifications
-        personal_info = PersonalInfo.objects.first()
-        email_sent = send_contact_emails(contact_record, personal_info)
-        
-        # Log successful submission
-        logger.info(f"Contact form submission from {form_data['email']} (ID: {contact_record.id})")
-        
-        # Return success response
-        success_message = "Thank you for your message! We'll get back to you soon."
-        if not email_sent:
-            success_message = "Your message has been saved. We'll get back to you soon."
-            
-        return JsonResponse({
-            'success': True,
-            'message': success_message
-        })
-        
-    except Exception as e:
-        logger.error(f"Error in contact form submission: {str(e)}")
-        return JsonResponse({
-            'success': False,
-            'errors': ["Sorry, there was an error sending your message. Please try again."]
-        })
-
-
-def validate_contact_form(form_data):
-    """Validate contact form data and return list of errors"""
-    errors = []
-    
-    # Name validation
-    if not form_data['name']:
-        errors.append("Full name is required.")
-    elif len(form_data['name']) > 100:
-        errors.append("Name must be less than 100 characters.")
-    
-    # Email validation
-    if not form_data['email']:
-        errors.append("Email is required.")
-    else:
-        try:
-            validate_email(form_data['email'])
-        except ValidationError:
-            errors.append("Please enter a valid email address.")
-        if len(form_data['email']) > 254:
-            errors.append("Email must be less than 254 characters.")
-    
-    # Message validation
-    if not form_data['message']:
-        errors.append("Message is required.")
-    
-    # Optional field length validation
-    if form_data['subject'] and len(form_data['subject']) > 200:
-        errors.append("Subject must be less than 200 characters.")
-    
-    if form_data['phone'] and len(form_data['phone']) > 20:
-        errors.append("Phone number must be less than 20 characters.")
-    
-    if form_data['company'] and len(form_data['company']) > 100:
-        errors.append("Company name must be less than 100 characters.")
-    
-    return errors
-
-
-def send_contact_emails(contact_record, personal_info):
-    """Send email notifications for contact form submissions"""
-    try:
-        # Determine recipient email
-        recipient_email = get_contact_recipient_email(personal_info)
-        
-        if not recipient_email:
-            logger.error("No recipient email configured for contact form")
-            return False
-        
-        # Send admin notification
-        admin_email_sent = send_admin_notification(contact_record, recipient_email)
-        
-        # Send user confirmation
-        user_email_sent = send_user_confirmation(contact_record, personal_info)
-        
-        if admin_email_sent or user_email_sent:
-            logger.info(f"Contact emails sent for submission ID: {contact_record.id}")
-            return True
-        else:
-            logger.warning(f"Failed to send emails for submission ID: {contact_record.id}")
-            return False
-            
-    except Exception as e:
-        logger.error(f"Error sending contact emails: {str(e)}")
-        return False
-
-
-def get_contact_recipient_email(personal_info):
-    """Get the recipient email for contact notifications"""
-    # Try settings first
-    recipient_email = getattr(settings, 'CONTACT_EMAIL', None)
-    
-    # Fall back to personal info
-    if not recipient_email and personal_info and personal_info.email:
-        recipient_email = personal_info.email
-    
-    # Final fallback to default from email
-    if not recipient_email:
-        recipient_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None)
-    
-    return recipient_email
-
-
-def send_admin_notification(contact_record, recipient_email):
-    """Send notification email to admin"""
-    try:
-        subject = f"New Contact Form Submission - {contact_record.subject}"
-        
-        # Try to render HTML template, fallback to plain text
-        try:
-            context = {
-                'contact': contact_record,
-                'site_name': getattr(settings, 'SITE_NAME', 'Your Website'),
-            }
-            html_content = render_to_string('emails/contact_admin.html', context)
-            text_content = strip_tags(html_content)
-            
-            # Send HTML email
-            email = EmailMultiAlternatives(
-                subject=subject,
-                body=text_content,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yoursite.com'),
-                to=[recipient_email],
-                reply_to=[contact_record.email]
-            )
-            email.attach_alternative(html_content, "text/html")
-            email.send()
-            
-        except Exception:
-            # Fallback to plain text email
-            text_content = create_admin_text_email(contact_record)
-            send_mail(
-                subject=subject,
-                message=text_content,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yoursite.com'),
-                recipient_list=[recipient_email],
-                fail_silently=False,
-            )
-        
-        return True
-        
-    except Exception as e:
-        logger.error(f"Error sending admin notification: {str(e)}")
-        return False
-
-
-def send_user_confirmation(contact_record, personal_info):
-    """Send confirmation email to user"""
-    try:
-        subject = f"Thank you for contacting us - {contact_record.subject}"
-        
-        # Try to render HTML template, fallback to plain text
-        try:
-            context = {
-                'contact': contact_record,
-                'site_name': getattr(settings, 'SITE_NAME', 'Our Website'),
-                'personal_info': personal_info,
-            }
-            html_content = render_to_string('emails/contact_confirmation.html', context)
-            text_content = strip_tags(html_content)
-            
-            # Send HTML email
-            email = EmailMultiAlternatives(
-                subject=subject,
-                body=text_content,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yoursite.com'),
-                to=[contact_record.email]
-            )
-            email.attach_alternative(html_content, "text/html")
-            email.send()
-            
-        except Exception:
-            # Fallback to plain text email
-            text_content = create_user_text_email(contact_record)
-            send_mail(
-                subject=subject,
-                message=text_content,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@yoursite.com'),
-                recipient_list=[contact_record.email],
-                fail_silently=False,
-            )
-        
-        return True
-        
-    except Exception as e:
-        logger.error(f"Error sending user confirmation: {str(e)}")
-        return False
-
-
-def create_admin_text_email(contact_record):
-    """Create plain text admin notification email"""
-    return f"""
-New contact form submission received:
-
-From: {contact_record.name}
-Email: {contact_record.email}
-Phone: {contact_record.phone or 'Not provided'}
-Company: {contact_record.company or 'Not provided'}
-Subject: {contact_record.subject}
-
-Message:
-{contact_record.message}
-
-Submitted: {contact_record.created_at}
-    """.strip()
-
-
-def create_user_text_email(contact_record):
-    """Create plain text user confirmation email"""
-    site_name = getattr(settings, 'SITE_NAME', 'Our Team')
-    return f"""
-Hi {contact_record.name},
-
-Thank you for contacting us! We have received your message and will get back to you as soon as possible.
-
-Your message:
-Subject: {contact_record.subject}
-Message: {contact_record.message}
-
-We typically respond within 24 hours during business days.
-
-Best regards,
-{site_name}
-    """.strip()
 
 
 # Utility Views

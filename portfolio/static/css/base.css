@@ -19,7 +19,7 @@
 
 /* Light theme */
 [data-theme="light"] {
-  --bg: #f5fffc;
+
   --surface: rgba(255, 255, 255, 0.9);
   --muted: #4b5563;
   --text: #0b1220;
