@@ -1,0 +1,58 @@
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/experience.css' %}">
+
+<!-- Featured Experience from Database -->
+{% if featured_experience %}
+<section class="experience-section">
+  <div class="sec-head">
+    <h2>Experience</h2>
+  </div>
+        
+  <div class="timeline-container">
+    {% for experience in featured_experience %}
+      <div class="timeline-item">
+        <div class="timeline-year">
+          {% if experience.start_date %}
+            {{experience.start_date|date:"Y"}}
+          {% else %}
+            2021
+          {% endif %}
+        </div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="experience-card glass">
+            <div class="role-header">
+              <div class="role-info">
+                <h3>{{experience.job_title}}</h3>
+                <h4>{{experience.company}}</h4>
+                {% if experience.location %}
+                  <p class="location">{{experience.location}}</p>
+                {% endif %}
+              </div>
+              {% if experience.company_logo %}
+                <img class="company-logo" src="{{experience.company_logo}}" alt="{{experience.company}} logo" />
+              {% endif %}
+            </div>
+            {% if experience.description %}
+              <p class="experience-description">{{experience.description}}</p>
+            {% endif %}
+            {% if experience.technologies_used %}
+              <div class="tech-tags">
+                <span class="tech-tag">{{experience.technologies_used|truncatechars:50}}</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Right decorative line -->
+  <div class="experience-line experience-line-right"></div>
+</section>
+
+<script src="{% static 'js/experience.js' %}"></script>
+
+{% endif %}
+{% endblock %}

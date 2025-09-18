@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block page_title %}Home{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+  <div class="hero-card glass">
+    <!-- Your existing hero content -->
+    <div class="photo-wrap">
+      {% if personal_info.profile_image %}
+        <img class="photo" src="{{personal_info.profile_image}}" alt="{{personal_info.name}}" />
+      {% else %}
+        <img class="photo" src="{% static 'images/pic2.webp' %}" alt="Profile" />
+      {% endif %}
+    </div>
+            
+    <div class="hero-content">
+      <div class="kicker">Hello, I'm {% if personal_info %}{{personal_info.name|truncatewords:1}}{% else %}Developer{% endif %}</div>
+      <h1 class="title">
+        {% if personal_info and personal_info.title %}
+          <span class="accent">{{personal_info.title}}</span>
+        {% else %}
+          <span class="accent">Professional</span><br/>Developer
+        {% endif %}
+      </h1>
+      {% if personal_info.introduction %}
+        <p class="hero-description">{{personal_info.introduction|truncatechars:250}}</p>
+      {% endif %}
+      <div class="hero-actions">
+        <a class="btn" href="{% get_media_prefix %}resume.rohit.pdf" download>Download CV</a>
+        {% if personal_info %}
+          {% if personal_info.linkedin or personal_info.github or personal_info.twitter %}
+            <div class="footer-social">
+              {% if personal_info.linkedin %}
+                <a href="{{personal_info.linkedin}}" target="_blank" aria-label="LinkedIn">
+                  <img src="{% static 'images/icons/linkedin.png' %}" alt="LinkedIn" class="social-icon">
+                </a>
+              {% endif %}
+              {% if personal_info.github %}
+                <a href="{{personal_info.github}}" target="_blank" aria-label="GitHub">
+                  <img src="{% static 'images/icons/github.png' %}" alt="GitHub" class="social-icon">
+                </a>
+              {% endif %}
+              {% if personal_info.twitter %}
+                <a href="{{personal_info.twitter}}" target="_blank" aria-label="Twitter">
+                  <img src="{% static 'images/icons/twitter.png' %}" alt="Twitter" class="social-icon">
+                </a>
+              {% endif %}
+              {% if personal_info.instagram %}
+                <a href="{{personal_info.instagram}}" target="_blank" aria-label="Instagram">
+                  <img src="{% static 'images/icons/instagram.png' %}" alt="Instagram" class="social-icon">
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <!-- Include Experience Section -->
+  <section id="experience">
+    {% include 'home/experience.html' %}
+  </section>
+
+  <!-- Separator between Experience and Projects -->
+  <div class="section-separator"></div>
+
+  <!-- Include Projects and Skills Section -->
+  <section id="projects">
+    {% include 'home/project_skill.html' %}
+  </section>
+
+  <!-- Separator between Projects and Contact -->
+  <div class="section-separator"></div>
+
+  <!-- Include Contact Section -->
+  <section id="contact">
+    {% include 'home/contact.html' %}
+  </section>
+
+</section>
+{% endblock %}

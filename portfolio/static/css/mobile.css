@@ -1,0 +1,234 @@
+/* HAMBURGER + MOBILE MENU (CSS-only, using :has) */
+
+/* Header height for positioning */
+header {
+    --header-h: 64px;
+}
+
+/* Hide button on desktop */
+.mobile-menu-toggle {
+    display: none;
+}
+
+/* Desktop menu stays inline */
+.menu {
+    display: flex;
+    gap: 26px;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    /* Show hamburger, hide inline menu */
+    .mobile-menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 0px;
+        background: var(--surface);
+        position: relative;
+        padding: 0;
+        margin-left: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .mobile-menu-toggle:hover {
+        background: var(--surface-hover, rgba(255, 255, 255, 0.05));
+    }
+
+    .mobile-menu-toggle span {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        height: 2px;
+        background: var(--text);
+        border-radius: 0px;
+        transition: transform 0.25s ease, opacity 0.2s ease, width 0.2s ease;
+    }
+
+    .mobile-menu-toggle span:nth-child(1) {
+        top: 11px;
+    }
+
+    .mobile-menu-toggle span:nth-child(2) {
+        top: 18px;
+        width: 70%;
+        left: 15%;
+    }
+
+    .mobile-menu-toggle span:nth-child(3) {
+        top: 25px;
+    }
+
+    /* Turn into "X" when expanded */
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0.3);
+    }
+
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* Convert menu into full-width solid drawer */
+    .menu {
+        position: fixed;
+        top: calc(var(--header-h) + 8px);
+        right: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 9px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        z-index: 20;
+        max-height: calc(100vh - var(--header-h) - 16px);
+        overflow-y: auto;
+    }
+
+    .menu a {
+        color: var(--text);
+        padding: 9px 16px;
+        border-radius: 0px;
+        font-weight: 300;
+        text-decoration: none;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        display: block;
+    }
+
+    .menu a.active,
+    .menu a:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(-2px);
+    }
+
+    .menu a.active {
+        background: var(--accent, rgba(255, 255, 255, 0.12));
+        font-weight: 600;
+    }
+
+    /* Open state, driven by aria-expanded on the toggle (via :has) */
+    header:has(#mobileMenuToggle[aria-expanded="true"]) .menu {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    /* Dim background when open - complete coverage */
+    header::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 15;
+    }
+
+    header:has(#mobileMenuToggle[aria-expanded="true"])::after {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Close menu when clicking backdrop */
+    header::after {
+        cursor: pointer;
+    }
+
+    /* Layout tweaks so brand is on left, hamburger on right */
+    .nav {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .menu#mainMenu {
+        justify-content: flex-start;
+    }
+
+    /* Position elements: brand left, right section center, hamburger right */
+    .brand {
+        order: 1;
+        grid-column: 1;
+    }
+
+    .right {
+        order: 2;
+        grid-column: 2;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-menu-toggle {
+        order: 3;
+        grid-column: 3;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* Hide desktop menu on mobile */
+    @supports selector(:has(*)) {
+        .menu#mainMenu {
+            display: none;
+        }
+        
+        header:has(#mobileMenuToggle) .menu#mainMenu {
+            display: flex;
+        }
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-menu-toggle span,
+    .menu,
+    header::after {
+        transition-duration: 0.01ms;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mobile-menu-toggle {
+        border-width: 2px;
+    }
+    
+    .menu {
+        border-width: 2px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .menu a:hover,
+[data-theme="dark"] .menu a.active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .menu a:hover,
+[data-theme="light"] .menu a.active {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] header::after {
+    background: rgba(0, 0, 0, 0.3);
+}

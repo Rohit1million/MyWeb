@@ -1,0 +1,146 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Login - {{personal_info.name|default:'Portfolio'}}{% endblock %}
+
+{% block page_title %}Login{% endblock %}
+
+{% block meta_description %}Login to access the portfolio admin area{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="login-page-wrapper">
+
+
+
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">Login</h1>
+            <p class="login-subtitle">Welcome back! Please sign in to your account</p>
+        </div>
+
+        <form method="post" action="">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <div style="position: relative;">
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           class="form-input" 
+                           placeholder="Type your username"
+                           value="{{ form.username.value|default:'' }}"
+                           required>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div style="position: relative;">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           class="form-input" 
+                           placeholder="Type your password"
+                           required>
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+                <div class="forgot-password">
+                    <a href="#" onclick="alert('Please contact admin to reset password')">Forgot password?</a>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button">
+                <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                Login
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Hide header, footer, and corner slider for login page
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('header');
+        const footer = document.querySelector('footer');
+        const cornerSlider = document.querySelector('.corner-slider');
+        const main = document.querySelector('main');
+        
+        if (header) header.style.display = 'none';
+        if (footer) footer.style.display = 'none';
+        if (cornerSlider) cornerSlider.style.display = 'none';
+        
+        // Make main full height for login
+        if (main) {
+            main.style.minHeight = '100vh';
+            main.style.display = 'flex';
+            main.style.alignItems = 'center';
+            main.style.justifyContent = 'center';
+            main.style.padding = '0';
+            main.style.margin = '0';
+            main.style.maxWidth = 'none';
+        }
+        
+        // Hide body overflow
+        document.body.style.overflow = 'hidden';
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        if (themeToggle) {
+            // Check for saved theme preference or default to 'dark'
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            body.setAttribute('data-theme', currentTheme);
+            
+            themeToggle.addEventListener('click', function() {
+                const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+
+        // Form interaction effects
+        const inputs = document.querySelectorAll('.form-input');
+        
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.01)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Form submission animation
+        const form = document.querySelector('form');
+        const button = document.querySelector('.login-button');
+        
+        if (form && button) {
+            form.addEventListener('submit', function() {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>Logging in...';
+                button.disabled = true;
+            });
+        }
+    });
+</script>
+{% endblock %}

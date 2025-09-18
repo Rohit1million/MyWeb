@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{LANGUAGE_CODE|default:'en'}}">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <title>{% block title %}{% if personal_info and personal_info.name %}{{personal_info.name}}{% else %}Portfolio{% endif %} • {% block page_title %}Portfolio{% endblock %}{% endblock %}</title>
+    
+    <meta name="description" content="{% block meta_description %}{% if personal_info and personal_info.meta_description %}{{personal_info.meta_description|truncatechars:160}}{% elif personal_info and personal_info.introduction %}{{personal_info.introduction|truncatechars:160}}{% else %}Professional portfolio showcasing skills, experience, and projects.{% endif %}{% endblock %}" />
+    
+    {% if personal_info and personal_info.name %}
+        <meta name="author" content="{{personal_info.name}}" />
+    {% endif %}
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
+    
+    {% block extra_css %}{% endblock %}
+    {% block head %}{% endblock %}
+</head>
+
+<body data-theme="{% block theme %}dark{% endblock %}">
+    <!-- Header Navigation -->
+    <header class="glass">
+        <div class="wrap nav">
+            <!-- Brand/Logo -->
+            <div class="brand">
+                <a href="{% url 'home' %}">
+                    {% if personal_info and personal_info.name %}{{personal_info.name|truncatewords:1}}{% else %}Portfolio{% endif %}
+                </a>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="menu" id="mainMenu" aria-label="Primary">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#experience" class="nav-link">Experience</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+            
+            <!-- Right Side Actions -->
+            <div class="right">
+                <!-- Theme Toggle -->
+                <button class="btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="light-icon">🌙</span>
+                    <span class="dark-icon">☀️</span>
+                </button>
+                
+                <!-- Admin Login -->
+                {% if user.is_authenticated %}
+                    <a class="btn admin-btn" href="/admin/">Admin</a>
+                {% else %}
+                    <button class="btn" id="loginModalBtn" onclick="openLoginModal()">Login</button>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-modal-overlay" onclick="closeLoginModal()"></div>
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            
+            <div class="login-modal-header">
+                <h2 class="login-modal-title">Login</h2>
+                <p class="login-modal-subtitle">Welcome back! Please sign in to your account</p>
+            </div>
+
+            <!-- Error message container -->
+            <div id="login-error-message" class="login-error-message"></div>
+
+            <form method="post" action="{% url 'login' %}" id="loginForm">
+                {% csrf_token %}
+                
+                <div class="login-form-group">
+                    <label for="modal-username" class="login-form-label">Username</label>
+                    <div class="login-input-wrapper">
+                        <input type="text" 
+                               id="modal-username" 
+                               name="username" 
+                               class="login-form-input" 
+                               placeholder="Enter your username"
+                               required>
+                        <i class="fas fa-user login-input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="login-form-group">
+                    <label for="modal-password" class="login-form-label">Password</label>
+                    <div class="login-input-wrapper">
+                        <input type="password" 
+                               id="modal-password" 
+                               name="password" 
+                               class="login-form-input" 
+                               placeholder="Enter your password"
+                               required>
+                        <i class="fas fa-lock login-input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="login-form-footer">
+                    <a href="#" class="forgot-password-link" onclick="alert('Please contact admin to reset password'); return false;">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-submit-button">
+                    <span>Login</span>
+                    <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="wrap" id="main-content">
+        <!-- Flash Messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message glass message-{{message.tags}}" data-message="{{message.tags}}">
+                        {{message}}
+                        <button class="message-close" aria-label="Close message">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="corner-slider" id="cornerSlider">
+            <div class="slider-trigger" id="sliderTrigger">
+                <svg class="trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="1" r="1"/>
+                    <circle cx="12" cy="23" r="1"/>
+                    <circle cx="4.22" cy="4.22" r="1"/>
+                    <circle cx="19.78" cy="19.78" r="1"/>
+                    <circle cx="1" cy="12" r="1"/>
+                    <circle cx="23" cy="12" r="1"/>
+                    <circle cx="4.22" cy="19.78" r="1"/>
+                    <circle cx="19.78" cy="4.22" r="1"/>
+                </svg>
+            </div>
+            
+            <div class="slider-panel" id="sliderPanel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Admin Panel</h3>
+                    <button class="panel-close" id="panelClose">×</button>
+                </div>
+                <!-- Admin Actions -->
+                <div class="admin-actions">
+                    {% if user.is_authenticated %}
+                        <a href="/admin/" class="admin-action">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <span class="action-text">Django Admin Site</span>
+                        </a>
+                        <form method="post" action="{% url 'admin:logout' %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="/">
+                            <button type="submit" class="admin-action" style="width: 100%; background: none; border: none; text-align: left; cursor: pointer;">
+                                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"/>
+                                    <polyline points="16,17 21,12 16,7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                <span class="action-text">Logout</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <button onclick="openLoginModal()" class="admin-action" style="width: 100%; background: none; border: none; text-align: left; cursor: pointer;">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H15"/>
+                                <polyline points="10,17 15,12 10,7"/>
+                                <line x1="15" y1="12" x2="3" y2="12"/>
+                            </svg>
+                            <span class="action-text">Login to Admin</span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="wrap footer-content">
+        <div class="footer-info">
+            © <span id="year"></span> 
+            {% if personal_info and personal_info.name %}{{personal_info.name}}{% else %}Portfolio{% endif %}
+            {% if personal_info and personal_info.address %} • {{personal_info.address}}{% endif %}
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/portfolio.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
