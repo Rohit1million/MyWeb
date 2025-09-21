@@ -1,0 +1,44 @@
+[
+{
+  "model": "portfolio.education",
+  "pk": 1,
+  "fields": {
+    "degree_type": "bachelor",
+    "degree_name": "Bachelor of Business Information Systems",
+    "institution": "Canterbury Institute of Management",
+    "location": "Darwin, NT",
+    "start_date": "2021-01-01",
+    "end_date": "2024-05-01",
+    "currently_studying": 0,
+    "description": "Comprehensive study of business information systems with focus on technology solutions for business problems.",
+    "relevant_coursework": "Data Analytics, Database Architecture, Programming (MySQL, Java)",
+    "grade": null,
+    "achievements": null,
+    "institution_logo": null,
+    "display_order": 0,
+    "featured": 1,
+    "created_at": "2025-09-05T13:19:19Z"
+  }
+},
+{
+  "model": "portfolio.education",
+  "pk": 2,
+  "fields": {
+    "degree_type": "professional",
+    "degree_name": "Professional Year in Business Communications",
+    "institution": "National Institute of Technology",
+    "location": "Australia",
+    "start_date": "2024-09-01",
+    "end_date": "2025-09-01",
+    "currently_studying": 0,
+    "description": "Professional development program focusing on business communication skills and Australian workplace practices.",
+    "relevant_coursework": "Business Communication, Professional Development, Workplace Skills",
+    "grade": null,
+    "achievements": null,
+    "institution_logo": null,
+    "display_order": 0,
+    "featured": 1,
+    "created_at": "2025-09-05T13:19:19Z"
+  }
+}
+]

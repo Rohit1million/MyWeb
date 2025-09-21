@@ -24,7 +24,7 @@ class BlogPosts(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+      
         db_table = 'blog_posts'
 
 
@@ -44,7 +44,7 @@ class Certifications(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+       
         db_table = 'certifications'
 
 
@@ -62,7 +62,7 @@ class Contacts(models.Model):
     replied_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        
         db_table = 'contacts'
 
 
@@ -84,7 +84,7 @@ class Education(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        
         db_table = 'education'
 
 
@@ -109,7 +109,7 @@ class Experience(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+      
         db_table = 'experience'
 
 
@@ -140,7 +140,7 @@ class PersonalInfo(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+       
         db_table = 'personal_info'
 
 
@@ -154,7 +154,7 @@ class ProjectCategories(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+    
         db_table = 'project_categories'
 
 
@@ -166,7 +166,7 @@ class ProjectImages(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+      
         db_table = 'project_images'
 
 
@@ -184,7 +184,7 @@ class Projects(models.Model):
     outcome_results = models.TextField(blank=True, null=True)
     lessons_learned = models.TextField(blank=True, null=True)
     featured_image = models.CharField(max_length=255, blank=True, null=True)
-    technologies = models.CharField(max_length=500)
+    technologies = models.CharField(max_length=300, blank=True, null=True)
     tools_used = models.CharField(max_length=300, blank=True, null=True)
     github_url = models.CharField(max_length=200, blank=True, null=True)
     live_demo_url = models.CharField(max_length=200, blank=True, null=True)
@@ -205,7 +205,7 @@ class Projects(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+       
         db_table = 'projects'
 
 
@@ -219,7 +219,7 @@ class QuickInfo(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+       
         db_table = 'quick_info'
 
 
@@ -238,7 +238,7 @@ class SiteSettings(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+       
         db_table = 'site_settings'
 
 
@@ -253,7 +253,7 @@ class SkillCategories(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        
         db_table = 'skill_categories'
 
 
@@ -271,6 +271,6 @@ class Skills(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        
         db_table = 'skills'
         unique_together = (('name', 'category'),)

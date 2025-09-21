@@ -1,0 +1,20 @@
+[
+{
+  "model": "portfolio.sitesettings",
+  "pk": 1,
+  "fields": {
+    "site_name": "Rohit Raj Shrestha - Portfolio",
+    "site_tagline": "IT Professional & Django Developer from Darwin, NT",
+    "primary_color": "#007bff",
+    "secondary_color": "#6c757d",
+    "accent_color": "#28a745",
+    "google_analytics_id": null,
+    "contact_email": "rohit.shrestha314@gmail.com",
+    "admin_email": "rohit.shrestha314@gmail.com",
+    "show_social_links": 1,
+    "enable_blog": 0,
+    "enable_testimonials": 0,
+    "updated_at": "2025-09-05T13:19:19Z"
+  }
+}
+]

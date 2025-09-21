@@ -72,18 +72,15 @@ WSGI_APPLICATION = 'portfolio_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'rohit_portfolio_db',  # Your database name
-        'USER': 'ResumePort',  # Your MySQL username
-        'PASSWORD': 'Jacks0nkelly',  # Your MySQL password
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'sql_mode': 'traditional',
-        }
-    }
+    'default': dj_database_url.config(
+        default="postgresql://portfolio_db_pq3u_user:jF4OaAvYeqEdNtWpYdnJjtK9grQR6Ltb@dpg-d37tk4je5dus739m7j80-a.singapore-postgres.render.com:5432/portfolio_db_pq3u?sslmode=require",
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 

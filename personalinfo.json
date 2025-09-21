@@ -1,0 +1,32 @@
+[
+{
+  "model": "portfolio.personalinfo",
+  "pk": 1,
+  "fields": {
+    "name": "Rohit Raj Shrestha",
+    "title": "Designer X Developer",
+    "tagline": "Designer and developer blending creativity with technology. Skilled in building modern web experiences with Python, Django, and MySQL, and driven by a passion for clean design and user-focused solutions.",
+    "profile_image": null,
+    "hero_background": null,
+    "introduction": "Designer and developer blending creativity with technology. Skilled in building modern web experiences with Python, Django, and MySQL, and driven by a passion for clean design and user-focused solutions.",
+    "about_me": "I have a proven ability to resolve hardware and software issues, configure IT systems, and deliver exceptional customer service. Known for my strong communication skills, ability to work independently, and eagerness to learn new technologies.",
+    "mission_statement": null,
+    "email": "rohit.shrestha314@gmail.com",
+    "phone": "0452354362",
+    "address": " Bayview, Darwin NT 0820",
+    "linkedin": "https://www.linkedin.com/in/rohit-shrestha-603a862b3",
+    "github": "https://github.com/",
+    "twitter": null,
+    "instagram": "https://www.instagram.com/",
+    "resume_file": "",
+    "meta_title": null,
+    "meta_description": null,
+    "meta_keywords": null,
+    "site_maintenance": 0,
+    "allow_contact_form": 1,
+    "show_resume_download": 1,
+    "created_at": "2025-09-05T13:19:19Z",
+    "updated_at": "2025-09-18T12:21:03Z"
+  }
+}
+]

@@ -1,0 +1,58 @@
+[
+{
+  "model": "portfolio.skillcategories",
+  "pk": 1,
+  "fields": {
+    "name": "Programming & Frameworks",
+    "slug": "programming-frameworks",
+    "description": "Programming languages and web frameworks",
+    "icon": "fas fa-code",
+    "color": "#007bff",
+    "display_order": 1,
+    "show_on_home": 1,
+    "created_at": "2025-09-05T13:19:19Z"
+  }
+},
+{
+  "model": "portfolio.skillcategories",
+  "pk": 2,
+  "fields": {
+    "name": "Data Analysis & Visualization",
+    "slug": "data-analysis",
+    "description": "Data analysis and business intelligence tools",
+    "icon": "fas fa-chart-bar",
+    "color": "#28a745",
+    "display_order": 2,
+    "show_on_home": 1,
+    "created_at": "2025-09-05T13:19:19Z"
+  }
+},
+{
+  "model": "portfolio.skillcategories",
+  "pk": 3,
+  "fields": {
+    "name": "Database & Tools",
+    "slug": "database-tools",
+    "description": "Database management and development tools",
+    "icon": "fas fa-database",
+    "color": "#ffc107",
+    "display_order": 3,
+    "show_on_home": 1,
+    "created_at": "2025-09-05T13:19:19Z"
+  }
+},
+{
+  "model": "portfolio.skillcategories",
+  "pk": 4,
+  "fields": {
+    "name": "Soft Skills",
+    "slug": "soft-skills",
+    "description": "Communication and leadership abilities",
+    "icon": "fas fa-users",
+    "color": "#6f42c1",
+    "display_order": 4,
+    "show_on_home": 1,
+    "created_at": "2025-09-05T13:19:19Z"
+  }
+}
+]
