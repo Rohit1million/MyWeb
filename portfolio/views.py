@@ -43,6 +43,7 @@ logger = logging.getLogger(__name__)
 def home(request):
     """Single-page app home view with all content sections"""
     try:
+        # Personal and quick info
         personal_info = PersonalInfo.objects.first()
         quick_infos = QuickInfo.objects.filter(active=1).order_by('display_order')
         
@@ -53,6 +54,7 @@ def home(request):
         # Skills data
         featured_skills = Skills.objects.filter(featured=1, active=1)
         skill_categories = SkillCategories.objects.filter(show_on_home=1).order_by('display_order')
+        proficiency_levels = Skills.objects.filter(active=1).values_list('proficiency', flat=True).distinct()
         
         # Projects data with images
         featured_projects = Projects.objects.filter(featured=1, published=1).prefetch_related('projectimages_set')[:6]
@@ -70,6 +72,7 @@ def home(request):
         education_list = Education.objects.filter(featured=1).order_by('-start_date')
         certifications = Certifications.objects.filter(featured=1).order_by('-issue_date')
         
+        # Context dictionary
         context = {
             'personal_info': personal_info,
             'quick_infos': quick_infos,
@@ -77,6 +80,7 @@ def home(request):
             'all_experience': all_experience,
             'featured_skills': featured_skills,
             'skill_categories': skill_categories,
+            'proficiency_levels': proficiency_levels,
             'featured_projects': featured_projects,
             'all_projects': all_projects,
             'project_categories': project_categories,
@@ -85,7 +89,8 @@ def home(request):
         }
         
         return render(request, 'home/home.html', context)
-        
+
+
     except Exception as e:
         logger.error(f"Error in home view: {str(e)}")
         messages.error(request, "Sorry, there was an error loading the page.")
@@ -277,30 +282,6 @@ def project_detail(request, slug):
         return redirect('home')
 
 
-def test_data(request):
-    """Simple test view to check database connection"""
-    try:
-        personal_count = PersonalInfo.objects.count()
-        skills_count = Skills.objects.count()
-        projects_count = Projects.objects.count()
-        experience_count = Experience.objects.count()
-        
-        personal = PersonalInfo.objects.first()
-        
-        data = {
-            'personal_info_count': personal_count,
-            'skills_count': skills_count,
-            'projects_count': projects_count,
-            'experience_count': experience_count,
-            'personal_name': personal.name if personal else 'No data',
-            'personal_title': personal.title if personal else 'No data',
-        }
-        
-        return render(request, 'portfolio/test_data.html', {'data': data})
-        
-    except Exception as e:
-        logger.error(f"Database connection error: {str(e)}")
-        return HttpResponse(f"Database connection error: {str(e)}")
 
 
 # Authentication Views

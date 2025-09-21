@@ -14,23 +14,23 @@
         <div class="project-card" data-project-id="{{project.id}}">
           <!-- Project Image Section -->
          <div class="project-image">
-  {% if project.id == 1 %}
-    <img src="{% static 'images/icons/image.png' %}" alt="{{project.title}} preview" loading="lazy">
-  {% elif project.id == 2 %}
-    <img src="{% static 'images/icons/project2.png' %}" alt="{{project.title}} preview" loading="lazy">
-  {% elif project.id == 3 %}
-    <img src="{% static 'images/icons/project3.png' %}" alt="{{project.title}} preview" loading="lazy">
-  {% else %}
-    <div class="project-placeholder-image">
-      <i class="fas fa-image"></i>
-    </div>
-  {% endif %}
+            {% if project.id == 1 %}
+              <img src="{% static 'images/icons/image.png' %}" alt="{{project.title}} preview" loading="lazy">
+            {% elif project.id == 2 %}
+              <img src="{% static 'images/icons/project2.png' %}" alt="{{project.title}} preview" loading="lazy">
+            {% elif project.id == 3 %}
+              <img src="{% static 'images/icons/project3.png' %}" alt="{{project.title}} preview" loading="lazy">
+            {% else %}
+              <div class="project-placeholder-image">
+                <i class="fas fa-image"></i>
+              </div>
+            {% endif %}
   
-  <div class="project-overlay">
-    <div class="project-color-bar" style="background-color: {% cycle '#6c757d' '#007bff' '#fd7e14' '#28a745' '#dc3545' '#6f42c1' %}"></div>
-  </div>
-</div>
-        
+              <div class="project-overlay">
+                <div class="project-color-bar" style="background-color: {% cycle '#6c757d' '#007bff' '#fd7e14' '#28a745' '#dc3545' '#6f42c1' %}"></div>
+              </div>
+             </div>
+                    
           
           <!-- Project Content -->
           <div class="project-content">
@@ -92,64 +92,70 @@
 {% endif %}
 
 <!-- All Skills from Database -->
+<!-- All Skills from Database -->
+<!-- All Skills from Database -->
 {% if featured_skills %}
-<section>
+<section id="skills">
   <div class="sec-head">
     <h2>My Skills</h2>
   </div>
-<div class="skills-grid-ios">
+
+  <div class="skills-grid-ios">
     {% for skill in featured_skills %}
       <div class="skill-app-icon">
         <div class="skill-icon-circle">
           {% if skill.icon %}
-            <img src="{% static 'images/icons/' %}{{skill.icon}}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/' %}{{ skill.icon }}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'python' %}
-            <img src="{% static 'images/icons/python.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/python.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'django' %}
-            <img src="{% static 'images/icons/django.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/django.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'javascript' %}
-            <img src="{% static 'images/icons/javascript.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/javascript.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'mysql' %}
-            <img src="{% static 'images/icons/mysql2.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/mysql2.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'html/css' %}
-            <img src="{% static 'images/icons/html.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-    
+            <img src="{% static 'images/icons/html.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'excel' %}
-            <img src="{% static 'images/icons/excel.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-
+            <img src="{% static 'images/icons/excel.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'git/github' %}
-            <img src="{% static 'images/icons/github.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/github4.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'vscode' %}
-            <img src="{% static 'images/icons/vscode.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-
+            <img src="{% static 'images/icons/vscode.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'genai' %}
-            <img src="{% static 'images/icons/GenAi.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-
-               {% elif skill.name|lower == 'word' %}
-            <img src="{% static 'images/icons/word.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-
+            <img src="{% static 'images/icons/GenAi.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
+          {% elif skill.name|lower == 'word' %}
+            <img src="{% static 'images/icons/word.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'etl processes' %}
-            <img src="{% static 'images/icons/etl.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/etl.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'problem solving' %}
-            <img src="{% static 'images/icons/problem.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/problem.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'customer service' %}
-            <img src="{% static 'images/icons/customer.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/customer.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% elif skill.name|lower == 'team collaboration' %}
-            <img src="{% static 'images/icons/collab.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-             
-            {% elif skill.name|lower == 'documentation' %}
-            <img src="{% static 'images/icons/documentation.png' %}" alt="{{skill.name}}" class="skill-custom-image">
-          
-            {% else %}
-            <img src="{% static 'images/icons/default.png' %}" alt="{{skill.name}}" class="skill-custom-image">
+            <img src="{% static 'images/icons/collab.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
+          {% elif skill.name|lower == 'documentation' %}
+            <img src="{% static 'images/icons/documentation.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
+          {% else %}
+            <img src="{% static 'images/icons/default.png' %}" alt="{{ skill.name }}" class="skill-custom-image">
           {% endif %}
         </div>
-        <div class="skill-name-ios">{{skill.name}}</div>
+
+        <!-- Skill name -->
+        <span class="skill-name-ios">{{ skill.name }}</span>
+
+        <!-- Skill percentage (hidden until hover via CSS) -->
+        {% if skill.proficiency %}
+          <span class="skill-percentage">{{ skill.proficiency }}%</span>
+        {% endif %}
       </div>
     {% endfor %}
-</div>
-
+  </div>
 </section>
+
+
+
+
 
 <!-- Carousel JavaScript for Mobile -->
 <script>
