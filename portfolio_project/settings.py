@@ -24,11 +24,7 @@ SECRET_KEY = 'django-insecure-p)_-d-e(e!r%ator6-rnd*^-(p_nr+9!-1%!bgp$b02l%*89&1
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-ALLOWED_HOSTS = [   'rohit-portfolio.onrender.com',
-    'localhost',
-    '127.0.0.1',]
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
